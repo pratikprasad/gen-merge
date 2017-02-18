@@ -42,6 +42,12 @@ func (s1 {{.StructName}}) Merge(s2 {{.StructName}}) {{.StructName}} {
 	{{end}}
 	return s1
 }
+
+func (s1 {{.StructName}}) MergeOverride(s2 {{.StructName}}) {{.StructName}} {
+	{{range .Fields}} s1.{{.FieldName}} = s2.{{.FieldName}}
+	{{end}}
+	return s1
+}
 {{end}}
 `
 
