@@ -45,7 +45,6 @@ func (s1 {{.StructName}}) Merge(s2 {{.StructName}}) {{.StructName}} {
 {{end}}
 `
 
-// TODO: Add tests
 func PrintMergePackage(writer io.Writer, pkg PackageStructMergeData) {
 	structTemplate := template.New("Struct Template")
 	structTemplate, err := structTemplate.Parse(structMerge)
@@ -116,12 +115,18 @@ func main() {
 						typeSpec := object.Decl.(*ast.TypeSpec)
 						fieldsList := typeSpec.Type.(*ast.StructType).Fields.List
 						for _, fieldDecl := range fieldsList {
-							currentFieldType := fieldDecl.Type.(*ast.Ident).Name
-							//fmt.Println(currentFieldType)
+							var currentFieldType string
+							currentFieldName := fieldDecl.Names[0].Name
+						  switch fieldDecl.Type.(type) {
+							case *ast.Ident:
+								currentFieldType = fieldDecl.Type.(*ast.Ident).Name
+							case *ast.StarExpr:
+								currentFieldType = fmt.Sprintf("*%s", fieldDecl.Type.(*ast.StarExpr).X)
+							}
 							fields = append(fields, FieldMergeData{
-								FieldName: fieldDecl.Names[0].Name,
-								ZeroValue: fmt.Sprintf("*(new(%s))", currentFieldType),
-							})
+									FieldName: currentFieldName,
+									ZeroValue: fmt.Sprintf("*(new(%s))", currentFieldType), // Ideally this would use a literal
+								})
 						}
 						s.Fields = fields
 						pkg.Structs = append(pkg.Structs, s)
