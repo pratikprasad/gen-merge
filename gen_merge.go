@@ -34,6 +34,7 @@ const structMerge = ` package {{.Package}}
 // Please avoid editing this manually.
 
 {{range .Structs}}
+// For any field not defined on s1, set it to the corresponding field in s2
 func (s1 {{.StructName}}) Merge(s2 {{.StructName}}) {{.StructName}} {
 	{{range .Fields}}
 	if s1.{{.FieldName}} == {{.ZeroValue}} {
@@ -43,8 +44,12 @@ func (s1 {{.StructName}}) Merge(s2 {{.StructName}}) {{.StructName}} {
 	return s1
 }
 
+// FOr any field defined on s2, set it to the corresponding field in s1
 func (s1 {{.StructName}}) MergeOverride(s2 {{.StructName}}) {{.StructName}} {
-	{{range .Fields}} s1.{{.FieldName}} = s2.{{.FieldName}}
+	{{range .Fields}}
+	if s2.{{.FieldName}} != {{.ZeroValue}} {
+		s1.{{.FieldName}} = s2.{{.FieldName}}
+	}
 	{{end}}
 	return s1
 }
