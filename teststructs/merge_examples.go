@@ -11,5 +11,7 @@ type Person struct {
 	Age int64
 	secretIdentity string
 
+	favoriteCity *string
+
 	Height NullFloat
 }
