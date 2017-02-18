@@ -31,3 +31,24 @@ func TestPerson_Merge(t *testing.T) {
 	merged = p1.Merge(p2)
 	assert.Equal(t, "NYC", *merged.favoriteCity)
 }
+
+func TestPerson_MergeOverride(t *testing.T) {
+	city := "Atlantis"
+	p1 := Person{
+		Name: "Alice",
+		Age:12345,
+		favoriteCity: &city,
+		Height: NullFloat{Valid: true, Float: 45.3},
+		secretIdentity: "Athena",
+	}
+	p2 := Person{
+		secretIdentity: "Cheshire Cat",
+	}
+	merged := p1.MergeOverride(p2)
+	assert.Equal(t, "Alice", merged.Name)
+	assert.Equal(t, int64(12345), merged.Age)
+	assert.Equal(t, "Atlantis", *merged.favoriteCity)
+	assert.Equal(t, 45.3, merged.Height.Float)
+	assert.Equal(t, true, merged.Height.Valid)
+	assert.Equal(t, "Cheshire Cat", merged.secretIdentity)
+}

@@ -4,19 +4,7 @@
 // Please avoid editing this manually.
 
 
-func (s1 NullFloat) Merge(s2 NullFloat) NullFloat {
-	
-	if s1.Valid == *(new(bool)) {
-		s1.Valid = s2.Valid
-	}
-	
-	if s1.Float == *(new(float64)) {
-		s1.Float = s2.Float
-	}
-	
-	return s1
-}
-
+// For any field not defined on s1, set it to the corresponding field in s2
 func (s1 Person) Merge(s2 Person) Person {
 	
 	if s1.Name == *(new(string)) {
@@ -37,6 +25,60 @@ func (s1 Person) Merge(s2 Person) Person {
 	
 	if s1.Height == *(new(NullFloat)) {
 		s1.Height = s2.Height
+	}
+	
+	return s1
+}
+
+// FOr any field defined on s2, set it to the corresponding field in s1
+func (s1 Person) MergeOverride(s2 Person) Person {
+	
+	if s2.Name != *(new(string)) {
+		s1.Name = s2.Name
+	}
+	
+	if s2.Age != *(new(int64)) {
+		s1.Age = s2.Age
+	}
+	
+	if s2.secretIdentity != *(new(string)) {
+		s1.secretIdentity = s2.secretIdentity
+	}
+	
+	if s2.favoriteCity != *(new(*string)) {
+		s1.favoriteCity = s2.favoriteCity
+	}
+	
+	if s2.Height != *(new(NullFloat)) {
+		s1.Height = s2.Height
+	}
+	
+	return s1
+}
+
+// For any field not defined on s1, set it to the corresponding field in s2
+func (s1 NullFloat) Merge(s2 NullFloat) NullFloat {
+	
+	if s1.Valid == *(new(bool)) {
+		s1.Valid = s2.Valid
+	}
+	
+	if s1.Float == *(new(float64)) {
+		s1.Float = s2.Float
+	}
+	
+	return s1
+}
+
+// FOr any field defined on s2, set it to the corresponding field in s1
+func (s1 NullFloat) MergeOverride(s2 NullFloat) NullFloat {
+	
+	if s2.Valid != *(new(bool)) {
+		s1.Valid = s2.Valid
+	}
+	
+	if s2.Float != *(new(float64)) {
+		s1.Float = s2.Float
 	}
 	
 	return s1
