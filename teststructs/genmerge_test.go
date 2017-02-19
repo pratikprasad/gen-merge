@@ -30,6 +30,10 @@ func TestPerson_Merge(t *testing.T) {
 	p2.favoriteCity = &city
 	merged = p1.Merge(p2)
 	assert.Equal(t, "NYC", *merged.favoriteCity)
+
+	p2.Friends = []Person{ p1, merged }
+	merged = p1.Merge(p2)
+	assert.Equal(t, 2, len(merged.Friends))
 }
 
 func TestPerson_MergeOverride(t *testing.T) {

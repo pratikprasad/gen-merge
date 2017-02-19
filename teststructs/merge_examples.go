@@ -14,4 +14,6 @@ type Person struct {
 	favoriteCity *string
 
 	Height NullFloat
+
+	Friends []Person
 }
