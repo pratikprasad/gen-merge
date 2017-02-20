@@ -137,6 +137,9 @@ func main() {
 								zeroValue = "nil"
 							case *ast.ArrayType:
 								zeroValue = "nil" // Nil is different from empty array.
+							case *ast.SelectorExpr:
+								selectorExpr := fieldDecl.Type.(*ast.SelectorExpr)
+								zeroValue = fmt.Sprintf("*(new(%s.%s))",  selectorExpr.X, selectorExpr.Sel.Name)
 							}
 							fields = append(fields, FieldMergeData{
 								FieldName: currentFieldName,
