@@ -125,26 +125,29 @@ func main() {
 					switch object.Decl.(type) {
 					case *ast.TypeSpec:
 						typeSpec := object.Decl.(*ast.TypeSpec)
-						fieldsList := typeSpec.Type.(*ast.StructType).Fields.List
-						for _, fieldDecl := range fieldsList {
-							var zeroValue, currentFieldType string
-							currentFieldName := fieldDecl.Names[0].Name
-							switch fieldDecl.Type.(type) {
-							case *ast.Ident:
-								currentFieldType = fieldDecl.Type.(*ast.Ident).Name
-								zeroValue = fmt.Sprintf("*(new(%s))", currentFieldType)
-							case *ast.StarExpr:
-								zeroValue = "nil"
-							case *ast.ArrayType:
-								zeroValue = "nil" // Nil is different from empty array.
-							case *ast.SelectorExpr:
-								selectorExpr := fieldDecl.Type.(*ast.SelectorExpr)
-								zeroValue = fmt.Sprintf("*(new(%s.%s))",  selectorExpr.X, selectorExpr.Sel.Name)
+						switch typeSpec.Type.(type) {
+						case *ast.StructType:
+							fieldsList := typeSpec.Type.(*ast.StructType).Fields.List
+							for _, fieldDecl := range fieldsList {
+								var zeroValue, currentFieldType string
+								currentFieldName := fieldDecl.Names[0].Name
+								switch fieldDecl.Type.(type) {
+								case *ast.Ident:
+									currentFieldType = fieldDecl.Type.(*ast.Ident).Name
+									zeroValue = fmt.Sprintf("*(new(%s))", currentFieldType)
+								case *ast.StarExpr:
+									zeroValue = "nil"
+								case *ast.ArrayType:
+									zeroValue = "nil" // Nil is different from empty array.
+								case *ast.SelectorExpr:
+									selectorExpr := fieldDecl.Type.(*ast.SelectorExpr)
+									zeroValue = fmt.Sprintf("*(new(%s.%s))", selectorExpr.X, selectorExpr.Sel.Name)
+								}
+								fields = append(fields, FieldMergeData{
+									FieldName: currentFieldName,
+									ZeroValue: zeroValue,
+								})
 							}
-							fields = append(fields, FieldMergeData{
-								FieldName: currentFieldName,
-								ZeroValue: zeroValue,
-							})
 						}
 						s.Fields = fields
 						pkg.Structs = append(pkg.Structs, s)
