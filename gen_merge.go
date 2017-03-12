@@ -11,6 +11,7 @@ import (
 	"text/template"
 
 	"github.com/urfave/cli"
+	"strings"
 )
 
 type FieldMergeData struct {
@@ -116,7 +117,12 @@ func main() {
 		}
 		for packageName, parsedPkg := range parsedPkgs {
 			pkg.Package = packageName
-			for _, f := range parsedPkg.Files {
+			for filePath, f := range parsedPkg.Files {
+
+				if strings.Contains(filePath, "_test") {
+					continue
+				}
+
 				for name, object := range f.Scope.Objects {
 					s := StructMergeData{
 						StructName: name,
