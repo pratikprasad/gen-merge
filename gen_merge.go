@@ -124,6 +124,9 @@ func main() {
 				}
 
 				for name, object := range f.Scope.Objects {
+					if !ast.IsExported(name) {
+						continue
+					}
 					s := StructMergeData{
 						StructName: name,
 					}
