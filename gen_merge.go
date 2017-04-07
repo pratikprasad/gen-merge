@@ -65,6 +65,14 @@ func (s1 {{.StructName}}) MergeOverride(s2 {{.StructName}}) {{.StructName}} {
 func PrintMergePackage(writer io.Writer, pkg PackageStructMergeData) {
 
 	structTemplate := template.New("Struct Template")
+	// Filter out structs that don't have any fields so it's more minimal.
+  structs := []StructMergeData{}
+	for _, p := range pkg.Structs {
+		if len(p.Fields) != 0 {
+			structs = append(structs, p)
+		}
+	}
+	pkg.Structs = structs
 	structTemplate, err := structTemplate.Parse(structMerge)
 	if err != nil {
 		panic(err)
@@ -152,6 +160,11 @@ func main() {
 						typeSpec := object.Decl.(*ast.TypeSpec)
 						switch typeSpec.Type.(type) {
 						case *ast.StructType:
+
+							// TODO: REMOVE
+							//_ = typeSpec.Type
+							//fmt.Printf("typeSpec.Type: %+v\n", typeSpec.Type.(*ast.InterfaceType))
+							// TODO: REMOVE
 							fieldsList := typeSpec.Type.(*ast.StructType).Fields.List
 							for _, fieldDecl := range fieldsList {
 								var zeroValue, currentFieldType string
