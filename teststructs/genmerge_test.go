@@ -1,8 +1,9 @@
 package teststructs
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPerson_Merge(t *testing.T) {
@@ -31,7 +32,7 @@ func TestPerson_Merge(t *testing.T) {
 	merged = p1.Merge(p2)
 	assert.Equal(t, "NYC", *merged.favoriteCity)
 
-	p2.Friends = []Person{ p1, merged }
+	p2.Friends = []Person{p1, merged}
 	merged = p1.Merge(p2)
 	assert.Equal(t, 2, len(merged.Friends))
 }
@@ -39,10 +40,10 @@ func TestPerson_Merge(t *testing.T) {
 func TestPerson_MergeOverride(t *testing.T) {
 	city := "Atlantis"
 	p1 := Person{
-		Name: "Alice",
-		Age:12345,
-		favoriteCity: &city,
-		Height: NullFloat{Valid: true, Float: 45.3},
+		Name:           "Alice",
+		Age:            12345,
+		favoriteCity:   &city,
+		Height:         NullFloat{Valid: true, Float: 45.3},
 		secretIdentity: "Athena",
 	}
 	p2 := Person{
