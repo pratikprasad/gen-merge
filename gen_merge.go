@@ -2,16 +2,16 @@ package main
 
 import (
 	"fmt"
-	"os"
-
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"io"
+	"os"
+	"sort"
+	"strings"
 	"text/template"
 
 	"github.com/urfave/cli"
-	"strings"
 )
 
 type FieldMergeData struct {
@@ -24,10 +24,18 @@ type StructMergeData struct {
 	Fields     []FieldMergeData
 }
 
+type StructMergeDataSlice []StructMergeData
+
+func (x StructMergeDataSlice) Len() int      { return len(x) }
+func (x StructMergeDataSlice) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
+func (x StructMergeDataSlice) Less(i, j int) bool {
+	return x[i].StructName < x[j].StructName
+}
+
 type PackageStructMergeData struct {
 	Package string
 	Imports map[string]bool
-	Structs []StructMergeData
+	Structs StructMergeDataSlice
 }
 
 // TODO(pratik): Refactor ZeroValue to just use a conditional.
@@ -63,16 +71,18 @@ func (s1 {{.StructName}}) MergeOverride(s2 {{.StructName}}) {{.StructName}} {
 `
 
 func PrintMergePackage(writer io.Writer, pkg PackageStructMergeData) {
+	pkgStructs := pkg.Structs
+	sort.Sort(pkgStructs)
 
 	structTemplate := template.New("Struct Template")
 	// Filter out structs that don't have any fields so it's more minimal.
-  structs := []StructMergeData{}
-	for _, p := range pkg.Structs {
+	structs := StructMergeDataSlice{}
+	for _, p := range pkgStructs {
 		if len(p.Fields) != 0 {
 			structs = append(structs, p)
 		}
 	}
-	pkg.Structs = structs
+	pkgStructs = structs
 	structTemplate, err := structTemplate.Parse(structMerge)
 	if err != nil {
 		panic(err)
@@ -142,7 +152,7 @@ func main() {
 						if pkg.Imports == nil {
 							pkg.Imports = map[string]bool{}
 						}
-						complete := alias.Name+" "+i.Path.Value
+						complete := alias.Name + " " + i.Path.Value
 						pkg.Imports[complete] = true
 					}
 				}
