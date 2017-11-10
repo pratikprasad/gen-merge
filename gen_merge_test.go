@@ -1,10 +1,11 @@
 package main
 
 import (
-	"testing"
-	"github.com/stretchr/testify/assert"
-	"io/ioutil"
 	"bytes"
+	"io/ioutil"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFileGen(t *testing.T) {
